@@ -62,12 +62,11 @@ class Oscar(schedulables: List[Schedulable]) {
         }
       } else {
         queue += next
-        if (waiting.size > 0) {
-          queue ++= waiting
-        }
+        queue ++= waiting
         return // launched everything we can for now
       }
     }
+    queue ++= waiting
   }
 
   def run() {
