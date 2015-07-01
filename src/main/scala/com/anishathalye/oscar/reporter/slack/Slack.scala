@@ -2,6 +2,7 @@ package com.anishathalye.oscar.reporter.slack
 
 import com.anishathalye.oscar.{ Result, Report, Success, Note, Failure }
 import com.anishathalye.oscar.reporter.{ Reporter, ErrorReporter }
+import com.anishathalye.oscar.Util.unwrap
 
 import spray.json._
 import DefaultJsonProtocol._
@@ -24,8 +25,8 @@ case class Slack(
   override def apply(name: String, result: Result) {
     val summary = result match {
       case Success(_)      => "succeeded"
-      case Note(report)    => s"note: ${report.summary}${report.description map (", " + _) getOrElse ""}"
-      case Failure(report) => s"failed: ${report.summary}${report.description map (", " + _) getOrElse ""}"
+      case Note(report)    => s"note: ${unwrap(report.summary)}${report.description map (", " + _) getOrElse ""}"
+      case Failure(report) => s"failed: ${unwrap(report.summary)}${report.description map (", " + _) getOrElse ""}"
     }
     val client = HttpClients.createDefault()
     val post = new HttpPost(url)

@@ -15,3 +15,11 @@ object Transformation {
   }
 
 }
+
+trait Util {
+
+  def unwrap(message: Option[String]): String = message getOrElse "None"
+
+}
+
+object Util extends Util

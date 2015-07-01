@@ -2,6 +2,7 @@ package com.anishathalye.oscar.reporter.sms
 
 import com.anishathalye.oscar.{ Result, Report, Success, Note, Failure }
 import com.anishathalye.oscar.reporter.{ Reporter, ErrorReporter }
+import com.anishathalye.oscar.Util.unwrap
 
 import com.twilio.sdk.TwilioRestClient
 import com.twilio.sdk.TwilioRestException
@@ -22,8 +23,8 @@ case class SMS(
     override def apply(name: String, result: Result) {
       val summary = result match {
         case Success(_)      => "succeeded"
-        case Note(report)    => s"note: ${report.summary}"
-        case Failure(report) => s"failed: ${report.summary}"
+        case Note(report)    => s"note: ${unwrap(report.summary)}"
+        case Failure(report) => s"failed: ${unwrap(report.summary)}"
       }
       val client = new TwilioRestClient(account, token)
       val factory = client.getAccount.getMessageFactory

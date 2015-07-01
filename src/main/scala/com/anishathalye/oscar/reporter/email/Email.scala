@@ -2,6 +2,7 @@ package com.anishathalye.oscar.reporter.email
 
 import com.anishathalye.oscar.{ Result, Report, Success, Note, Failure }
 import com.anishathalye.oscar.reporter.{ Reporter, ErrorReporter }
+import com.anishathalye.oscar.Util.unwrap
 
 import org.apache.commons.mail.{ SimpleEmail, DefaultAuthenticator }
 
@@ -16,8 +17,8 @@ case class Email(
     override def apply(name: String, result: Result) {
       val (overview, summary, description) = result match {
         case Success(report) => (s"succeeded at ${report.date}", "None", "None")
-        case Note(report)    => (s"note at ${report.date}", report.summary, report.description getOrElse "None")
-        case Failure(report) => (s"failed at ${report.date}", report.summary, report.description getOrElse "None")
+        case Note(report)    => (s"note at ${report.date}", unwrap(report.summary), unwrap(report.description))
+        case Failure(report) => (s"failed at ${report.date}", unwrap(report.summary), unwrap(report.description))
       }
       val email = new SimpleEmail()
       email setHostName hostname
