@@ -15,4 +15,15 @@ object ErrorReporter {
 
   }
 
+  def apply(reporter: Reporter): Reporter = new Reporter {
+
+    override def apply(name: String, result: Result) {
+      result match {
+        case Failure(report) => reporter(name, result)
+        case _               => // do nothing
+      }
+    }
+
+  }
+
 }
