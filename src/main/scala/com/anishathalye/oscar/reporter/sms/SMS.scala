@@ -20,7 +20,7 @@ case class SMS(
   def apply(phones: String*): Reporter = new Reporter {
 
     override def apply(name: String, result: Result) {
-      var summary = result match {
+      val summary = result match {
         case Success         => "succeeded"
         case Note(report)    => s"note: ${report.summary}"
         case Failure(report) => s"failed: ${report.summary}"

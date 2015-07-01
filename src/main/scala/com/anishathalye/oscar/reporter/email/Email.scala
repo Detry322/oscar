@@ -14,7 +14,7 @@ case class Email(
   def apply(emails: String*): Reporter = new Reporter {
 
     override def apply(name: String, result: Result) {
-      var (overview, summary, description) = result match {
+      val (overview, summary, description) = result match {
         case Success         => ("succeeded", "None", "None")
         case Note(report)    => (s"note at ${report.date}", report.summary, report.description getOrElse "None")
         case Failure(report) => (s"failed at ${report.date}", report.summary, report.description getOrElse "None")
