@@ -21,6 +21,7 @@ case class BackoffResetReporter(reporter: Reporter, low: Duration, high: Duratio
       }
       case _ => // do nothing
     }
+    super.apply(name, result)
   }
 
 }
