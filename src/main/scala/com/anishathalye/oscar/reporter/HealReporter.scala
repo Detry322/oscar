@@ -25,6 +25,7 @@ case class HealReporter(reporter: Reporter) extends Reporter {
         if (getLast(name) == false) {
           // switched state to healed
           reporter(name, result)
+          setLast(name, true)
         }
       }
       case Failure(report) => {
