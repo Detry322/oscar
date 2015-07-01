@@ -37,13 +37,13 @@ case class HTTP(
       val response = client execute request
       val code = response.getStatusLine.getStatusCode
       if (code == status) {
-        return Success
+        return Success(Report(new Date(), None, None))
       } else {
-        return Failure(Report(new Date(), s"tried $method $url, got $code expecting $status"))
+        return Failure(Report(new Date(), Some(s"tried $method $url, got $code expecting $status")))
       }
     } catch {
       case e @ (_: ClientProtocolException | _: IOException) => {
-        return Failure(Report(new Date(), s"tried $method $url expecting $status, exception thrown",
+        return Failure(Report(new Date(), Some(s"tried $method $url expecting $status, exception thrown"),
           Some(e.toString())
         ))
       }

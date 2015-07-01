@@ -21,7 +21,7 @@ case class SMS(
 
     override def apply(name: String, result: Result) {
       val summary = result match {
-        case Success         => "succeeded"
+        case Success(_)         => "succeeded"
         case Note(report)    => s"note: ${report.summary}"
         case Failure(report) => s"failed: ${report.summary}"
       }
