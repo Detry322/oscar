@@ -42,9 +42,12 @@ case class HTTP(
         return Failure(Report(new Date(), s"tried $method $url, got $code expecting $status"))
       }
     } catch {
-      case e @ (_: ClientProtocolException | _: IOException) => // do nothing, return failure later
+      case e @ (_: ClientProtocolException | _: IOException) => {
+        return Failure(Report(new Date(), s"tried $method $url expecting $status, exception thrown",
+          Some(e.toString())
+        ))
+      }
     }
-    return Failure(Report(new Date(), s"tried $method $url expecting $status, exception thrown"))
   }
 
 }
