@@ -6,10 +6,10 @@ import com.anishathalye.oscar.reporter.{ Reporter, ErrorReporter }
 import org.apache.commons.mail.{ SimpleEmail, DefaultAuthenticator }
 
 case class Email(
-  hostname: String,
-  port: Int,
-  username: String,
-  password: String) {
+    hostname: String,
+    port: Int,
+    username: String,
+    password: String) {
 
   def apply(emails: String*): Reporter = ErrorReporter({ (name, report) =>
     val email = new SimpleEmail()
