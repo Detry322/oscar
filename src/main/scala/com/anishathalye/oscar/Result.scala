@@ -10,4 +10,4 @@ case class Note(report: Report) extends Result
 
 case class Failure(report: Report) extends Result
 
-case class Report(date: Date, summary: String, description: Option[String])
+case class Report(date: Date, summary: String, description: Option[String] = None)
