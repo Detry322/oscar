@@ -4,10 +4,7 @@ import com.anishathalye.oscar.{ Result, Success }
 
 import concurrent.duration._
 
-case class BackoffResetReporter(
-  reporter: Reporter,
-  low: Duration, high:
-  Duration)
+case class BackoffResetReporter(reporter: Reporter, low: Duration, high: Duration)
     extends BackoffReporter(reporter, low, high) {
 
   def resetTimeout(name: String) {

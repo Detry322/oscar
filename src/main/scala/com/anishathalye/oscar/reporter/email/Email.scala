@@ -15,7 +15,7 @@ case class Email(
 
     override def apply(name: String, result: Result) {
       val (overview, summary, description) = result match {
-        case Success(report)         => (s"succeeded at ${report.date}", "None", "None")
+        case Success(report) => (s"succeeded at ${report.date}", "None", "None")
         case Note(report)    => (s"note at ${report.date}", report.summary, report.description getOrElse "None")
         case Failure(report) => (s"failed at ${report.date}", report.summary, report.description getOrElse "None")
       }
