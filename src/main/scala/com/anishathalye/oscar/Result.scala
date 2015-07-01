@@ -8,6 +8,6 @@ case object Success extends Result
 
 case class Note(report: Report) extends Result
 
-case class Error(report: Report) extends Result
+case class Failure(report: Report) extends Result
 
 case class Report(date: Date, summary: String, description: Option[String])
