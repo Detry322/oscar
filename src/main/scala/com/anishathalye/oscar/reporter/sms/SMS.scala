@@ -1,6 +1,6 @@
 package com.anishathalye.oscar.reporter.sms
 
-import com.anishathalye.oscar.Result
+import com.anishathalye.oscar.{ Result, Report, Success, Note, Failure }
 import com.anishathalye.oscar.reporter.{ Reporter, ErrorReporter }
 
 import com.twilio.sdk.TwilioRestClient
@@ -17,18 +17,27 @@ case class SMS(
     token: String,
     from: String) {
 
-  def apply(phones: String*): Reporter = ErrorReporter({ (name, report) =>
-    val client = new TwilioRestClient(account, token)
-    val factory = client.getAccount.getMessageFactory
-    val message = s"Oscar[$name] ${report.summary}"
+  def apply(phones: String*): Reporter = new Reporter {
 
-    phones foreach { phone =>
-      val params: JList[NameValuePair] = new ArrayList[NameValuePair]()
-      params add new BasicNameValuePair("Body", message)
-      params add new BasicNameValuePair("From", from)
-      params add new BasicNameValuePair("To", phone)
-      factory create params
+    override def apply(name: String, result: Result) {
+      var summary = result match {
+        case Success         => "succeeded"
+        case Note(report)    => s"note: ${report.summary}"
+        case Failure(report) => s"failed: ${report.summary}"
+      }
+      val client = new TwilioRestClient(account, token)
+      val factory = client.getAccount.getMessageFactory
+      val message = s"Oscar[$name] $summary"
+
+      phones foreach { phone =>
+        val params: JList[NameValuePair] = new ArrayList[NameValuePair]()
+        params add new BasicNameValuePair("Body", message)
+        params add new BasicNameValuePair("From", from)
+        params add new BasicNameValuePair("To", phone)
+        factory create params
+      }
     }
-  })
+
+  }
 
 }
