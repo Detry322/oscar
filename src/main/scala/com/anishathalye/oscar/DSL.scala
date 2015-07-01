@@ -29,6 +29,15 @@ trait DSL {
 
   }
 
+  implicit class ReporterOps(reporter: Reporter) {
+
+    def ~>(next: Reporter): Reporter = Reporter({ (name, result) =>
+      reporter(name, result)
+      next(name, result)
+    })
+
+  }
+
 }
 
 object DSL extends DSL
