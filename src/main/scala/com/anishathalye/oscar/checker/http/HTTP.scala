@@ -16,7 +16,7 @@ import java.io.IOException
 
 case class HTTP(
   url: String,
-  status: Int,
+  status: Int = 200,
   retries: Int = 3,
   timeout: Int = 5000, // milliseconds
   method: Method = GET)
