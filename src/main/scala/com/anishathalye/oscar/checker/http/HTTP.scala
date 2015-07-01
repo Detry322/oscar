@@ -5,7 +5,9 @@ import com.anishathalye.oscar.{ Result, Success, Failure }
 import com.anishathalye.oscar.checker.Checker
 
 import org.apache.http._
+import org.apache.http.params._
 import org.apache.http.client._
+import org.apache.http.client.config._
 import org.apache.http.client.methods._
 import org.apache.http.impl.client._
 
@@ -16,14 +18,19 @@ case class HTTP(
   url: String,
   status: Int,
   retries: Int = 3,
+  timeout: Int = 5000, // milliseconds
   method: Method = GET)
     extends Checker {
 
-  val client: HttpClient = HttpClientBuilder.create()
-    .setRetryHandler(new DefaultHttpRequestRetryHandler(retries, true))
-    .build()
-
   def apply(): Result = {
+    val client: HttpClient = HttpClientBuilder.create()
+      .setRetryHandler(new DefaultHttpRequestRetryHandler(retries, true))
+      .build()
+    val config = RequestConfig.custom()
+      .setConnectTimeout(timeout)
+      .setConnectionRequestTimeout(timeout)
+      .setSocketTimeout(timeout)
+      .build()
     val method = new HttpGet(url)
 
     try {
