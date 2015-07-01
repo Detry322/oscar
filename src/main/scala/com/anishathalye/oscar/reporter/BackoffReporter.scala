@@ -8,7 +8,7 @@ import math._
 
 import java.util.Date
 
-case class BackoffReporter(reporter: Reporter, low: Duration, high: Duration) extends Reporter {
+class BackoffReporter(reporter: Reporter, low: Duration, high: Duration) extends Reporter {
 
   val FACTOR = 2
 
