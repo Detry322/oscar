@@ -17,7 +17,7 @@ import org.apache.http.params._
 
 case class Slack(
   url: String,
-  username: String = "oscar",
+  username: String = "Oscar",
   emoji: Option[String] = None,
   channel: Option[String] = None)
     extends Reporter {
