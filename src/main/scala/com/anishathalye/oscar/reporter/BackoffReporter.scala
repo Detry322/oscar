@@ -8,7 +8,6 @@ import math._
 
 import java.util.Date
 
-// low and high in seconds
 case class BackoffReporter(reporter: Reporter, low: Duration, high: Duration) extends Reporter {
 
   val FACTOR = 2
