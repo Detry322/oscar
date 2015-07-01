@@ -13,5 +13,6 @@ scalacOptions := Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.apache.httpcomponents" % "httpclient" % "4.5"
+  "org.apache.httpcomponents" % "httpclient" % "4.5",
+  "org.apache.commons" % "commons-email" % "1.2"
 )
