@@ -33,8 +33,9 @@ class Oscar(schedulables: List[Schedulable]) {
     val now = new Date()
     schedulables foreach { schedulable =>
       if (!(scheduled contains schedulable)) {
-        val base = lastLaunched lift schedulable getOrElse now
-        val time = new Date(base.getTime + schedulable.frequency.toMillis)
+        val time = lastLaunched lift schedulable map { base =>
+          new Date(base.getTime + schedulable.frequency.toMillis)
+        } getOrElse (new Date())
         queue += Task(time, schedulable)
         scheduled += schedulable
       }
