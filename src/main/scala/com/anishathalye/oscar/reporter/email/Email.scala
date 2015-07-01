@@ -20,7 +20,8 @@ case class Email(
     email setFrom username
     email setSubject s"Oscar Report [$name]"
     email setMsg s"""Oscar check [$name] failed at ${report.date}
-                    |Summary: ${report.summary}"
+                    |
+                    |Summary: ${report.summary}
                     |Details: ${report.description getOrElse "None"}""".stripMargin
     emails foreach { address =>
       email addTo address

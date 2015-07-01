@@ -31,10 +31,10 @@ case class HTTP(
       .setConnectionRequestTimeout(timeout)
       .setSocketTimeout(timeout)
       .build()
-    val method = new HttpGet(url)
+    val request = new HttpGet(url)
 
     try {
-      val response = client execute method
+      val response = client execute request
       val code = response.getStatusLine.getStatusCode
       if (code == status) {
         return Success
