@@ -6,7 +6,7 @@ import collection.mutable.{ Map => MMap, HashMap }
 
 object AbsorbingReporter {
 
-  def apply(reporter: Reporter, capacity: Int): Reporter = new Reporter {
+  def apply(reporter: Reporter, capacity: Int = 1): Reporter = new Reporter {
 
     val absorbed: MMap[String, Int] = new HashMap[String, Int]()
 
