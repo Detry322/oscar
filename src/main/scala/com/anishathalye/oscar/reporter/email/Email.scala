@@ -15,10 +15,10 @@ case class Email(
   def apply(emails: String*): Reporter = new Reporter {
 
     override def apply(name: String, result: Result) {
-      val (overview, summary, description) = result match {
-        case Success(report) => (s"succeeded at ${report.date}", "None", "None")
-        case Note(report)    => (s"note at ${report.date}", unwrap(report.summary), unwrap(report.description))
-        case Failure(report) => (s"failed at ${report.date}", unwrap(report.summary), unwrap(report.description))
+      val (overview, summary, description, date) = result match {
+        case Success(report) => (s"succeeded at ${report.date}", "None", "None", report.date)
+        case Note(report)    => (s"note at ${report.date}", unwrap(report.summary), unwrap(report.description), report.date)
+        case Failure(report) => (s"failed at ${report.date}", unwrap(report.summary), unwrap(report.description), report.date)
       }
       val email = new SimpleEmail()
       email setHostName hostname
@@ -26,7 +26,7 @@ case class Email(
       email setAuthenticator new DefaultAuthenticator(username, password)
       email setTLS true
       email setFrom username
-      email setSubject s"Oscar Report [$name]"
+      email setSubject s"Oscar Report [$name] @ $date"
       email setMsg s"""Oscar check [$name] $overview
                       |
                       |Summary: $summary
