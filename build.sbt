@@ -14,6 +14,7 @@ scalacOptions := Seq(
 
 libraryDependencies ++= Seq(
   "org.apache.httpcomponents" % "httpclient" % "4.5",
+  "commons-io" % "commons-io" % "2.4",
   "org.apache.commons" % "commons-email" % "1.2",
   "com.twilio.sdk" % "twilio-java-sdk" % "3.4.5",
   "io.spray" %%  "spray-json" % "1.3.2"

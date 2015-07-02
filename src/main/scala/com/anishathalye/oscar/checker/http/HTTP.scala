@@ -4,6 +4,7 @@ import com.anishathalye.oscar.Report
 import com.anishathalye.oscar.{ Result, Success, Failure }
 import com.anishathalye.oscar.checker.Checker
 
+import org.apache.commons.io.IOUtils
 import org.apache.http._
 import org.apache.http.params._
 import org.apache.http.client._
@@ -16,6 +17,7 @@ import java.io.IOException
 
 case class HTTP(
   url: String,
+  contains: Option[String] = None,
   status: Int = 200,
   retries: Int = 3,
   timeout: Int = 5000, // milliseconds
@@ -37,7 +39,21 @@ case class HTTP(
       val response = client execute request
       val code = response.getStatusLine.getStatusCode
       if (code == status) {
-        return Success(Report(new Date(), None, None))
+        contains match {
+          case None => Success(Report(new Date(), None, None))
+          case Some(check) => {
+            val contentStream = response.getEntity.getContent
+            val encoding = Option(response.getEntity.getContentEncoding) map {
+              _.getValue
+            } getOrElse "UTF-8"
+            val body = IOUtils.toString(contentStream, if (encoding != null) encoding else encoding)
+            if (body contains check) {
+              Success(Report(new Date(), None, None))
+            } else {
+              Failure(Report(new Date(), Some(s"tried $method $url, missing content $check")))
+            }
+          }
+        }
       } else {
         return Failure(Report(new Date(), Some(s"tried $method $url, got $code expecting $status")))
       }
