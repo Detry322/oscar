@@ -3,6 +3,7 @@ package com.anishathalye.oscar
 import com.anishathalye.oscar.checker.{ Checker, NullChecker }
 import com.anishathalye.oscar.reporter.{ Reporter, NullReporter }
 
+import language.implicitConversions
 import concurrent.duration._
 
 trait DSL {
@@ -37,6 +38,8 @@ trait DSL {
     })
 
   }
+
+  implicit def rawToOption[T](raw: T): Option[T] = Option(raw)
 
 }
 
