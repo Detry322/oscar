@@ -1,3 +1,5 @@
+name          := "oscar"
+
 organization  := "com.anishathalye"
 
 version       := "1.0"
