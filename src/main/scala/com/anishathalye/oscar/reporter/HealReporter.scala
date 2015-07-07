@@ -4,13 +4,16 @@ import com.anishathalye.oscar.{ Result, Success, Failure }
 
 import collection.mutable.{ Map => MMap, HashMap }
 
-case class HealReporter(reporter: Reporter) extends Reporter {
+case class HealReporter(
+  reporter: Reporter,
+  initialState: Boolean = false)
+    extends Reporter {
 
   // whether last check was successful
   val last: MMap[String, Boolean] = new HashMap[String, Boolean]()
 
   def getLast(name: String): Boolean = this.synchronized {
-    last lift name getOrElse false
+    last lift name getOrElse initialState
   }
 
   def setLast(name: String, successful: Boolean) {
