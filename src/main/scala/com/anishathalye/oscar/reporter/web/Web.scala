@@ -10,6 +10,7 @@ import DefaultJsonProtocol._
 import org.http4s.dsl._
 import org.http4s.server.HttpService
 import org.http4s.server.blaze.BlazeBuilder
+import org.http4s.server.middleware.CORS
 
 import collection.mutable.{ Map => MMap, HashMap }
 
@@ -34,7 +35,7 @@ case class Web(port: Int) extends Reporter {
       "description" -> (report.description getOrElse "")
     )
   }
-  val service = HttpService {
+  val service = CORS(HttpService {
     case GET -> Root / "status" => this.synchronized {
       val serialized = statuses.toList map {
         case (name, report) => serialize(name, report)
@@ -50,7 +51,7 @@ case class Web(port: Int) extends Reporter {
         }
       }
     }
-  }
+  })
 
   val thread = new Thread(new Runnable {
     override def run() {
