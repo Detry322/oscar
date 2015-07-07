@@ -43,11 +43,21 @@ case class Web(port: Int) extends Reporter {
       Ok(serialized.toJson.prettyPrint)
     }
     case GET -> Root / "status" / name => {
-      this.synchronized {
-        // get a specific resource
-        statuses lift name match {
-          case Some(result) => Ok(serialize(name, result).toJson.prettyPrint)
-          case None         => NotFound("not found")
+      if (name.isEmpty) {
+        // get all
+        this.synchronized {
+          val serialized = statuses.toList map {
+            case (name, report) => serialize(name, report)
+          }
+          Ok(serialized.toJson.prettyPrint)
+        }
+      } else {
+        this.synchronized {
+          // get a specific resource
+          statuses lift name match {
+            case Some(result) => Ok(serialize(name, result).toJson.prettyPrint)
+            case None         => NotFound("not found")
+          }
         }
       }
     }
