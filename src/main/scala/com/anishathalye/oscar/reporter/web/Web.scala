@@ -14,13 +14,10 @@ import org.http4s.server.middleware.CORS
 
 import collection.mutable.{ Map => MMap, HashMap }
 
-import java.net.InetSocketAddress
-
 case class Web(port: Int) extends Reporter {
 
   val statuses: MMap[String, Result] = new HashMap[String, Result]()
 
-  val addr = new InetSocketAddress("0.0.0.0", port)
   def serialize(name: String, result: Result): Map[String, String] = {
     val (status, report) = result match {
       case Success(r) => ("success", r)
@@ -65,7 +62,7 @@ case class Web(port: Int) extends Reporter {
 
   val thread = new Thread(new Runnable {
     override def run() {
-      BlazeBuilder.bindHttp(port)
+      BlazeBuilder.bindHttp(port, "0.0.0.0")
         .mountService(service)
         .run
         .awaitShutdown()
