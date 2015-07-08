@@ -12,11 +12,15 @@ import org.http4s.server.HttpService
 import org.http4s.server.blaze.BlazeBuilder
 import org.http4s.server.middleware.CORS
 
+import java.util.Date
+
 import collection.mutable.{ Map => MMap, HashMap }
 
 case class Web(port: Int) extends Reporter {
 
   val statuses: MMap[String, Result] = new HashMap[String, Result]()
+
+  val lastFailed: MMap[String, Date] = new HashMap[String, Date]()
 
   def serialize(name: String, result: Result): Map[String, String] = {
     val (status, report) = result match {
@@ -28,6 +32,9 @@ case class Web(port: Int) extends Reporter {
       "name" -> name,
       "status" -> status,
       "date" -> Util.dateToIsoString(report.date),
+      "last_failed" -> (lastFailed lift name map {
+        Util.dateToIsoString(_)
+      } getOrElse ""),
       "summary" -> (report.summary getOrElse ""),
       "description" -> (report.description getOrElse "")
     )
@@ -39,22 +46,18 @@ case class Web(port: Int) extends Reporter {
       }
       Ok(serialized.toJson.prettyPrint)
     }
-    case GET -> Root / "status" / name => {
+    case GET -> Root / "status" / name => this.synchronized {
       if (name.isEmpty) {
         // get all
-        this.synchronized {
-          val serialized = statuses.toList map {
-            case (name, report) => serialize(name, report)
-          }
-          Ok(serialized.toJson.prettyPrint)
+        val serialized = statuses.toList map {
+          case (name, report) => serialize(name, report)
         }
+        Ok(serialized.toJson.prettyPrint)
       } else {
-        this.synchronized {
-          // get a specific resource
-          statuses lift name match {
-            case Some(result) => Ok(serialize(name, result).toJson.prettyPrint)
-            case None         => NotFound("not found")
-          }
+        // get a specific resource
+        statuses lift name match {
+          case Some(result) => Ok(serialize(name, result).toJson.prettyPrint)
+          case None         => NotFound("not found")
         }
       }
     }
@@ -73,6 +76,10 @@ case class Web(port: Int) extends Reporter {
   override def apply(name: String, result: Result) {
     this.synchronized {
       statuses(name) = result
+      result match {
+        case Failure(report) => lastFailed(name) = report.date
+        case _               => // ignore
+      }
     }
   }
 
