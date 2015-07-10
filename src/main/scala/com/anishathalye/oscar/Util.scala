@@ -30,6 +30,10 @@ trait Util {
     df format date
   }
 
+  implicit class Pipe[T](t: T) {
+    def |>[V](f: T => V) = f(t)
+  }
+
 }
 
 object Util extends Util

@@ -3,6 +3,7 @@ package com.anishathalye.oscar.checker.http
 import com.anishathalye.oscar.Report
 import com.anishathalye.oscar.{ Result, Success, Failure }
 import com.anishathalye.oscar.checker.Checker
+import com.anishathalye.oscar.Util.Pipe
 
 import org.apache.commons.io.IOUtils
 import org.apache.http._
@@ -21,17 +22,22 @@ case class HTTP(
   status: Int = 200,
   retries: Int = 3,
   timeout: Int = 5000, // milliseconds
-  method: Method = GET)
+  method: Method = GET,
+  allowRedirect: Boolean = false)
     extends Checker {
 
   def apply(): Result = {
     val client: HttpClient = HttpClientBuilder.create()
-      .setRetryHandler(new DefaultHttpRequestRetryHandler(retries, true))
-      .setRedirectStrategy(new RedirectStrategy {
-        override def getRedirect(request: HttpRequest, response: HttpResponse, context: HttpContext) = null
-        override def isRedirected(request: HttpRequest, response: HttpResponse, context: HttpContext) = false
-      })
-      .build()
+      .setRetryHandler(new DefaultHttpRequestRetryHandler(retries, true)) |> { cl =>
+        if (!allowRedirect) {
+          cl.setRedirectStrategy(new RedirectStrategy {
+            override def getRedirect(request: HttpRequest, response: HttpResponse, context: HttpContext) = null
+            override def isRedirected(request: HttpRequest, response: HttpResponse, context: HttpContext) = false
+          })
+        } else {
+          cl
+        }
+      } |> { _.build() }
     val config = RequestConfig.custom()
       .setConnectTimeout(timeout)
       .setConnectionRequestTimeout(timeout)
