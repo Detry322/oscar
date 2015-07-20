@@ -28,7 +28,7 @@ case class SMS(
       }
       val client = new TwilioRestClient(account, token)
       val factory = client.getAccount.getMessageFactory
-      val message = s"Oscar[$name] $summary"
+      val message = s"Oscar [$name] $summary"
 
       phones foreach { phone =>
         val params: JList[NameValuePair] = new ArrayList[NameValuePair]()
