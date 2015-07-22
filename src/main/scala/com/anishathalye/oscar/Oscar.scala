@@ -3,6 +3,7 @@ package com.anishathalye.oscar
 import collection.mutable.{ HashMap, HashSet, Map => MMap, Set => MSet, PriorityQueue }
 import concurrent.duration._
 import math._
+import util.control.Exception.ignoring
 
 import java.util.Date
 
@@ -78,10 +79,8 @@ class Oscar(schedulables: List[Schedulable]) {
       // everything should be present exactly once in the queue now
       val nextLaunch = (new Date()).getTime - queue.head.time.getTime
       val sleepTime = max(nextLaunch, MIN_SLEEP_DURATION.toMillis)
-      try {
+      ignoring(classOf[InterruptedException]) {
         Thread sleep sleepTime
-      } catch {
-        case _: InterruptedException => // do nothing
       }
     }
   }
