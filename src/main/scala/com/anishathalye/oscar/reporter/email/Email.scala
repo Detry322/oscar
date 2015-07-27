@@ -10,7 +10,9 @@ case class Email(
     hostname: String,
     port: Int,
     username: String,
-    password: String) {
+    password: String,
+    fromEmail: String,
+    fromName: String) {
 
   def apply(emails: String*): Reporter = new Reporter {
 
@@ -25,7 +27,7 @@ case class Email(
       email setSmtpPort port
       email setAuthenticator new DefaultAuthenticator(username, password)
       email setTLS true
-      email setFrom username
+      email setFrom (fromEmail, fromName)
       email setSubject s"Oscar Report [$name] @ $date"
       email setMsg s"""Oscar check [$name] $overview
                       |
