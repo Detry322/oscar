@@ -3,6 +3,7 @@ package com.anishathalye.oscar.reporter.web
 import com.anishathalye.oscar.{ Result, Report, Success, Note, Failure }
 import com.anishathalye.oscar.reporter.{ Reporter, ErrorReporter }
 import com.anishathalye.oscar.Util
+import Util.Pipe
 
 import spray.json._
 import DefaultJsonProtocol._
@@ -39,7 +40,20 @@ case class Web(port: Int) extends Reporter {
       "description" -> (report.description getOrElse "")
     )
   }
+
+  val startTime = new Date()
+
+  def meta: Map[String, String] = {
+    val uptime = (new Date()).getTime() - startTime.getTime() |> { _ / 1000 }
+    Map(
+      "uptime" -> uptime.toString
+    )
+  }
+
   val service = CORS(HttpService {
+    case GET -> Root => this.synchronized {
+      Ok(meta.toJson.prettyPrint)
+    }
     case GET -> Root / "status" => this.synchronized {
       val serialized = statuses.toList map {
         case (name, report) => serialize(name, report)
