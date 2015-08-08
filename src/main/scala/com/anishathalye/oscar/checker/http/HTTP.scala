@@ -7,6 +7,7 @@ import com.anishathalye.oscar.Util.Pipe
 
 import org.apache.commons.io.IOUtils
 import org.apache.http._
+import org.apache.http.auth._
 import org.apache.http.client._
 import org.apache.http.client.config._
 import org.apache.http.client.methods._
@@ -18,6 +19,7 @@ import java.io.IOException
 
 case class HTTP(
   url: String,
+  credentials: Option[CredentialsProvider] = None,
   contains: Option[String] = None,
   status: Int = 200,
   retries: Int = 3,
@@ -36,6 +38,11 @@ case class HTTP(
           })
         } else {
           cl
+        }
+      } |> { cl =>
+        credentials match {
+          case Some(cred) => cl.setDefaultCredentialsProvider(cred)
+          case None       => cl
         }
       } |> { _.build() }
     val config = RequestConfig.custom()
@@ -80,3 +87,14 @@ case class HTTP(
 
 sealed abstract class Method
 case object GET extends Method
+
+object BasicAuthentication {
+
+  def apply(username: String, password: String): CredentialsProvider = {
+    val credentialsProvider = new BasicCredentialsProvider()
+    credentialsProvider.setCredentials(AuthScope.ANY,
+      new UsernamePasswordCredentials(username, password))
+    credentialsProvider
+  }
+
+}
