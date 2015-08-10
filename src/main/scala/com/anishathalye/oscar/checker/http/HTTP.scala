@@ -11,6 +11,7 @@ import org.apache.http.auth._
 import org.apache.http.client._
 import org.apache.http.client.config._
 import org.apache.http.client.methods._
+import org.apache.http.entity._
 import org.apache.http.impl.client._
 import org.apache.http.protocol._
 
@@ -24,7 +25,8 @@ case class HTTP(
   status: Int = 200,
   retries: Int = 3,
   timeout: Int = 5000, // milliseconds
-  method: Method = GET,
+  method: Method = Get,
+  headers: Option[Map[String, String]] = None,
   allowRedirect: Boolean = false)
     extends Checker {
 
@@ -50,8 +52,28 @@ case class HTTP(
       .setConnectionRequestTimeout(timeout)
       .setSocketTimeout(timeout)
       .build()
-    val request = new HttpGet(url)
+    def maybeSetEntity(entity: Option[HttpEntity])(req: HttpEntityEnclosingRequest with HttpRequestBase) = {
+      entity foreach { ent =>
+        req.setEntity(ent)
+      }
+      req
+    }
+    val request: HttpUriRequest with HttpRequestBase = method match {
+      case Get         => new HttpGet(url)
+      case Post(data)  => new HttpPost(url) |> maybeSetEntity(data)
+      case Put(data)   => new HttpPut(url) |> maybeSetEntity(data)
+      case Patch(data) => new HttpPatch(url) |> maybeSetEntity(data)
+      case Delete      => new HttpDelete(url)
+      case Head        => new HttpHead(url)
+      case Options     => new HttpOptions(url)
+      case Trace       => new HttpTrace(url)
+    }
     request.setConfig(config)
+    headers foreach { map =>
+      map foreach {
+        case (name, value) => request.setHeader(name, value)
+      }
+    }
 
     try {
       val response = client execute request
@@ -73,6 +95,8 @@ case class HTTP(
           }
         }
       } else {
+        var handler = new BasicResponseHandler
+        println(s"response => ${handler.handleResponse(response)}")
         return Failure(Report(new Date(), Some(s"tried $method $url, got $code expecting $status")))
       }
     } catch {
@@ -86,8 +110,27 @@ case class HTTP(
 
 }
 
-sealed abstract class Method
-case object GET extends Method
+sealed trait Method
+case object Get extends Method
+case class Post(data: Option[HttpEntity] = None) extends Method {
+  override def toString = "Post"
+}
+case class Put(data: Option[HttpEntity] = None) extends Method {
+  override def toString = "Put"
+}
+case class Patch(data: Option[HttpEntity]) extends Method {
+  override def toString = "Patch"
+}
+case object Delete extends Method
+case object Head extends Method
+case object Options extends Method
+case object Trace extends Method
+
+case object StringData {
+
+  def apply(data: String): HttpEntity = new StringEntity(data)
+
+}
 
 object BasicAuthentication {
 
