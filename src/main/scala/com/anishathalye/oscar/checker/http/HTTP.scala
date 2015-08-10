@@ -51,6 +51,7 @@ case class HTTP(
       .setSocketTimeout(timeout)
       .build()
     val request = new HttpGet(url)
+    request.setConfig(config)
 
     try {
       val response = client execute request
