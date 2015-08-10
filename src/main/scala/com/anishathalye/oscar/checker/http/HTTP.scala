@@ -95,13 +95,11 @@ case class HTTP(
           }
         }
       } else {
-        var handler = new BasicResponseHandler
-        println(s"response => ${handler.handleResponse(response)}")
-        return Failure(Report(new Date(), Some(s"tried $method $url, got $code expecting $status")))
+        Failure(Report(new Date(), Some(s"tried $method $url, got $code expecting $status")))
       }
     } catch {
       case e @ (_: ClientProtocolException | _: IOException) => {
-        return Failure(Report(new Date(), Some(s"tried $method $url expecting $status, exception thrown"),
+        Failure(Report(new Date(), Some(s"tried $method $url expecting $status, exception thrown"),
           Some(e.toString())
         ))
       }
