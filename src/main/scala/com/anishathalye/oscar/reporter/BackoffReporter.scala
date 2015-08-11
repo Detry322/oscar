@@ -70,3 +70,11 @@ class BackoffReporter(reporter: Reporter, low: Duration, high: Duration) extends
   }
 
 }
+
+object BackoffReporter {
+
+  def apply(reporter: Reporter, low: Duration, high: Duration): BackoffReporter = {
+    new BackoffReporter(reporter, low, high)
+  }
+
+}
