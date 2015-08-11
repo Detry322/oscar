@@ -109,20 +109,38 @@ case class HTTP(
 }
 
 sealed trait Method
-case object Get extends Method
+
+case object Get extends Method {
+  override def toString = "GET"
+}
+
 case class Post(data: Option[HttpEntity] = None) extends Method {
-  override def toString = "Post"
+  override def toString = "POST"
 }
+
 case class Put(data: Option[HttpEntity] = None) extends Method {
-  override def toString = "Put"
+  override def toString = "PUT"
 }
+
 case class Patch(data: Option[HttpEntity]) extends Method {
-  override def toString = "Patch"
+  override def toString = "PATCH"
 }
-case object Delete extends Method
-case object Head extends Method
-case object Options extends Method
-case object Trace extends Method
+
+case object Delete extends Method {
+  override def toString = "DELETE"
+}
+
+case object Head extends Method {
+  override def toString = "HEAD"
+}
+
+case object Options extends Method {
+  override def toString = "OPTIONS"
+}
+
+case object Trace extends Method {
+  override def toString = "TRACE"
+}
 
 case object StringData {
 
